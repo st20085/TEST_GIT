@@ -29,7 +29,7 @@ public class CacheFileManager<O> {
    *
    * @param file
    */
-  public O getInCacheOrLoad(File file) throws Exception {
+  public O getInCacheOrLoad(File file) {
 
     // {
     // System.err.println("clear cache");
@@ -55,9 +55,8 @@ public class CacheFileManager<O> {
    * Load with function
    *
    * @param file
-   * @throws Exception
    */
-  protected O load(File file) throws Exception {
+  protected O load(File file) {
     return function.apply(file);
   }
 
