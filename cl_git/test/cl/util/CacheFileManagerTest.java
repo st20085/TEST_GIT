@@ -11,11 +11,12 @@ public class CacheFileManagerTest
   public static void main(String[] args) throws IOException
   {
     Path tmpPath = Files.createTempFile("test_", ".tmp");
-    File tmpFile = tmpPath.toFile();
-    tmpFile.deleteOnExit();
     
     System.out.println("tmpPath="+tmpPath);
     Files.write(tmpPath, Arrays.asList("1", "2"));
+    
+    File tmpFile = tmpPath.toFile();
+    tmpFile.deleteOnExit();
     
     //
     Function<File, List<String>> function = file -> {
@@ -37,7 +38,7 @@ public class CacheFileManagerTest
 //    List<String> lines2 = function.apply(tmpFile);
     
     CacheFileManager<List<String>> cacheFileManager = new CacheFileManager<List<String>>(function) {
-      Map<File, byte[]> checksumMap = new HashMap<>();
+//      Map<File, byte[]> checksumMap = new HashMap<>();
       
       @Override
       public boolean hasBeenModified(File file)
@@ -46,7 +47,7 @@ public class CacheFileManagerTest
           try
           {
             byte[] sha1 = createSha1(file);
-            byte[] expectedSha1 = checksumMap.computeIfAbsent(file, f -> sha1);
+            byte[] expectedSha1 = (byte[]) getMetadata(file).computeIfAbsent("checksum", tmp -> sha1);
             if (Arrays.equals(sha1, expectedSha1)) {
               return false;
             }

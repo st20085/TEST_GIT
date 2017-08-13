@@ -3,8 +3,7 @@ package cl.util;
 import java.io.File;
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 /**
@@ -29,12 +28,14 @@ public class CacheFileManager<O> {
    * @param file
    */
   public O getInCacheOrLoad(File file) {
+    Objects.requireNonNull(file);
+    if (! file.exists())
+      throw new RuntimeException("File don't exists : "+file);
+      
     FileInfo fileInfo = hasBeenModified(file) ? null : fileToObjectCacheMap.get(file);
     Reference<O> ref = fileInfo == null ? null : fileInfo.ref;
     O o = ref == null ? null : ref.get();
     if (o == null) {
-      removeFromCache(file);
-
       o = load(file);
 
       if (fileInfo == null) {
@@ -65,8 +66,8 @@ public class CacheFileManager<O> {
    */
   public boolean hasBeenModified(File file) {
     FileInfo fileInfo = fileToObjectCacheMap.get(file);
-    Long lastModified = fileInfo == null? null : fileInfo.modifiedDate;
-    return lastModified == null || lastModified.longValue() != file.lastModified();
+    long lastModified = fileInfo == null? -1 : fileInfo.modifiedDate;
+    return lastModified != file.lastModified();
   }
 
   /**
@@ -103,21 +104,11 @@ public class CacheFileManager<O> {
    * @param file
    */
   protected Map<Object, Object> getMetadata(File file) {
-    FileInfo fileInfo = fileToObjectCacheMap.get(file);
+    FileInfo fileInfo = fileToObjectCacheMap.computeIfAbsent(file, f -> new FileInfo());
     if (fileInfo.metadataMap == null)
       fileInfo.metadataMap = new HashMap<>();
     return fileInfo.metadataMap;
   }
-  
-//  protected void putMetadata(File file, Object key, Object value) {
-//    FileInfo fileInfo = fileToObjectCacheMap.get(file);
-//    fileInfo.metadataMap.put(key, value);
-//  }
-//  
-//  protected <T> T getMetadata(File file, Object key) {
-//    FileInfo fileInfo = fileToObjectCacheMap.get(file);
-//    return (T) fileInfo.metadataMap.get(key);
-//  }
   
   private class FileInfo {
     Reference<O> ref;
