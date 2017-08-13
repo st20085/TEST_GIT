@@ -87,6 +87,12 @@ public class CacheFileManagerTest
         }
     }
     fis.close();
-    return digest.digest();
-}
+    byte[] sha1 = digest.digest();
+    
+//    System.out.println(Arrays.toString(sha1));
+//    System.out.println(javax.xml.bind.DatatypeConverter.printHexBinary(sha1));
+//    System.out.println(javax.xml.bind.DatatypeConverter.printBase64Binary(sha1));
+
+    return sha1;
+  }
 }
