@@ -2,6 +2,7 @@ package cl.util;
 
 import java.io.*;
 import java.nio.file.*;
+import java.security.*;
 import java.util.*;
 import java.util.function.*;
 
@@ -35,12 +36,57 @@ public class CacheFileManagerTest
 //    List<String> lines = function.apply(tmpFile);
 //    List<String> lines2 = function.apply(tmpFile);
     
-    CacheFileManager<List<String>> cacheFileManager = new CacheFileManager<List<String>>(function);
+    CacheFileManager<List<String>> cacheFileManager = new CacheFileManager<List<String>>(function) {
+      Map<File, byte[]> checksumMap = new HashMap<>();
+      
+      @Override
+      protected boolean hasBeenModified(File file)
+      {
+        if (super.hasBeenModified(file)) {
+          try
+          {
+            byte[] sha1 = createSha1(file);
+            byte[] expectedSha1 = checksumMap.computeIfAbsent(file, f -> sha1);
+            if (Arrays.equals(sha1, expectedSha1)) {
+              return false;
+            }
+          }
+          catch(Exception e)
+          {
+            e.printStackTrace();
+          }
+          return true;
+        }
+        
+        return false;
+      }
+    };
     List<String> lines = cacheFileManager.getInCacheOrLoad(tmpFile);
     System.out.println(lines.size());
-    lines.clear();
+
+    tmpFile.setLastModified(System.currentTimeMillis());
     
     List<String> lines2 = cacheFileManager.getInCacheOrLoad(tmpFile);
     System.out.println(lines2.size());
   }
+  
+  /**
+   * Create SHA1 
+   * @param file
+   * @throws Exception
+   */
+  public static byte[] createSha1(File file) throws Exception  {
+    MessageDigest digest = MessageDigest.getInstance("SHA-1");
+    InputStream fis = new FileInputStream(file);
+    int n = 0;
+    byte[] buffer = new byte[8192];
+    while (n != -1) {
+        n = fis.read(buffer);
+        if (n > 0) {
+            digest.update(buffer, 0, n);
+        }
+    }
+    fis.close();
+    return digest.digest();
+}
 }

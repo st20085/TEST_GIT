@@ -30,13 +30,6 @@ public class CacheFileManager<O> {
    * @param file
    */
   public O getInCacheOrLoad(File file) {
-
-    // {
-    // System.err.println("clear cache");
-    // fileToObjectCacheMap.clear();
-    // fileToDateCacheMap.clear();
-    // }
-
     Reference<O> ref = hasBeenModified(file) ? null : fileToObjectCacheMap.get(file);
     O o = ref == null ? null : ref.get();
     if (o == null) {
@@ -61,7 +54,7 @@ public class CacheFileManager<O> {
   }
 
   /**
-   * Return true if file has been modified (use last modified date)
+   * Return true if file has been modified (use last modified date, to modify)
    *
    * @param file
    */
