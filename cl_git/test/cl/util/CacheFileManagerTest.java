@@ -40,7 +40,7 @@ public class CacheFileManagerTest
       Map<File, byte[]> checksumMap = new HashMap<>();
       
       @Override
-      protected boolean hasBeenModified(File file)
+      public boolean hasBeenModified(File file)
       {
         if (super.hasBeenModified(file)) {
           try
