@@ -12,9 +12,9 @@ import java.util.function.Function;
  * The class <b>CacheFileManager</b> allows to create object from file and manage if file has been modified.<br>
  * Example
  * Function<File, List<String>> getLinesFunction = file -> getLines(file);
- *  CacheFileManager<List<String>> cacheFileManager = new CacheFileManager<List<String>>(getLinesFunction);
- *  List<String> lines = cacheFileManager.getInCacheOrLoad(fileToLoad); // read file
- *  List<String> lines2 = cacheFileManager.getInCacheOrLoad(fileToLoad); // don't read file if not modified
+ * CacheFileManager<List<String>> cacheFileManager = new CacheFileManager<List<String>>(getLinesFunction);
+ * List<String> lines = cacheFileManager.getInCacheOrLoad(fileToLoad); // read file
+ * List<String> lines2 = cacheFileManager.getInCacheOrLoad(fileToLoad); // don't read file if not modified
  */
 public class CacheFileManager<O> {
   final Map<File, FileInfo> fileToObjectCacheMap = new HashMap<>();
@@ -117,6 +117,9 @@ public class CacheFileManager<O> {
     return fileInfo.metadataMap;
   }
 
+  /**
+   * The class <b>FileInfo</b> allows to.<br>
+   */
   private class FileInfo {
     Reference<O> ref;
     long modifiedDate;
