@@ -3,11 +3,13 @@ package cl.util;
 import java.io.File;
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 
 /**
- * The class <b>CacheFileManager</b> allows to.<br>
+ * The class <b>CacheFileManager</b> allows to create object from file and manage if file has been modified.<br>
  */
 public class CacheFileManager<O> {
   final Map<File, FileInfo> fileToObjectCacheMap = new HashMap<>();
@@ -31,7 +33,7 @@ public class CacheFileManager<O> {
     Objects.requireNonNull(file);
     if (! file.exists())
       throw new RuntimeException("File don't exists : "+file);
-      
+
     FileInfo fileInfo = hasBeenModified(file) ? null : fileToObjectCacheMap.get(file);
     Reference<O> ref = fileInfo == null ? null : fileInfo.ref;
     O o = ref == null ? null : ref.get();
@@ -42,7 +44,7 @@ public class CacheFileManager<O> {
         fileInfo = new FileInfo();
         fileToObjectCacheMap.put(file, fileInfo);
       }
-      
+
       fileInfo.ref = createReference(o);
       fileInfo.modifiedDate = file.lastModified();
     }
@@ -98,7 +100,7 @@ public class CacheFileManager<O> {
   public void removeFromCache(File file) {
     fileToObjectCacheMap.remove(file);
   }
-  
+
   /**
    * Return the metadata
    * @param file
@@ -109,7 +111,7 @@ public class CacheFileManager<O> {
       fileInfo.metadataMap = new HashMap<>();
     return fileInfo.metadataMap;
   }
-  
+
   private class FileInfo {
     Reference<O> ref;
     long modifiedDate;
