@@ -35,10 +35,6 @@ public class CacheFileManager<O> {
    * @param file
    */
   public O getInCacheOrLoad(File file) {
-    Objects.requireNonNull(file);
-    if (! file.exists())
-      throw new RuntimeException("File don't exists : "+file);
-
     FileInfo fileInfo = hasBeenModified(file) ? null : fileToObjectCacheMap.get(file);
     Reference<O> ref = fileInfo == null ? null : fileInfo.ref;
     O o = ref == null ? null : ref.get();
@@ -63,6 +59,10 @@ public class CacheFileManager<O> {
    * @param file
    */
   public final O load(File file) {
+    Objects.requireNonNull(file);
+    if (! file.exists())
+      throw new RuntimeException("File don't exists : "+file);
+
     return function.apply(file);
   }
 
@@ -72,6 +72,10 @@ public class CacheFileManager<O> {
    * @param file
    */
   public boolean hasBeenModified(File file) {
+    Objects.requireNonNull(file);
+    if (! file.exists())
+      throw new RuntimeException("File don't exists : "+file);
+
     FileInfo fileInfo = fileToObjectCacheMap.get(file);
     long lastModified = fileInfo == null? -1 : fileInfo.modifiedDate;
     return lastModified != file.lastModified();
@@ -92,17 +96,23 @@ public class CacheFileManager<O> {
    * @param file
    */
   public O getInCache(File file) {
+    Objects.requireNonNull(file);
+    if (! file.exists())
+      throw new RuntimeException("File don't exists : "+file);
+
     FileInfo fileInfo = fileToObjectCacheMap.get(file);
     Reference<O> ref = fileInfo == null? null : fileInfo.ref;
     return ref == null ? null : ref.get();
   }
 
   /**
-   * Remove objet from cache
+   * Remove object from cache
    *
    * @param file
    */
   public void removeFromCache(File file) {
+    Objects.requireNonNull(file);
+
     fileToObjectCacheMap.remove(file);
   }
 
@@ -111,6 +121,10 @@ public class CacheFileManager<O> {
    * @param file
    */
   protected Map<Object, Object> getMetadata(File file) {
+    Objects.requireNonNull(file);
+    if (! file.exists())
+      throw new RuntimeException("File don't exists : "+file);
+
     FileInfo fileInfo = fileToObjectCacheMap.computeIfAbsent(file, f -> new FileInfo());
     if (fileInfo.metadataMap == null)
       fileInfo.metadataMap = new HashMap<>();
