@@ -132,6 +132,21 @@ public class CacheFileManager<O> {
   }
 
   /**
+   * Expunge stale entries
+   */
+  public void expungeStaleEntries() {
+    fileToObjectCacheMap.entrySet().removeIf(entry -> !entry.getKey().exists());
+  }
+
+  /*
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    return "CacheFileManager[size="+fileToObjectCacheMap.size()+"]";
+  }
+
+  /**
    * The class <b>FileInfo</b> allows to.<br>
    */
   private class FileInfo {
