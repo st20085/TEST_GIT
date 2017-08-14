@@ -1,2 +1,2 @@
 # TEST_GIT
-Just a git repo test
+Just a Git repo test
